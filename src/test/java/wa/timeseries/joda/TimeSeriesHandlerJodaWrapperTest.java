@@ -3,9 +3,9 @@ package wa.timeseries.joda;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
-import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
+import wa.timeseries.core.TimeSeriesID;
 import wa.timeseries.core.persistence.InMemoryTimeSeriesPersistenceHandler;
 
 import java.util.ArrayList;
@@ -14,9 +14,11 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class TimeSeriesJodaWrapperTest {
+public class TimeSeriesHandlerJodaWrapperTest {
 
     private InMemoryTimeSeriesPersistenceHandler<Integer> persistenceHandler;
+
+    private TimeSeriesID TS_ID = new TimeSeriesID("ts", "1");
 
     @Before
     public void before() {
@@ -28,11 +30,12 @@ public class TimeSeriesJodaWrapperTest {
 
         DateTime startDate = new DateTime().minusYears(1);
 
-        TimeSeriesJodaWrapper<Integer> ts = new TimeSeriesJodaWrapper<>(
+        TimeSeriesHandlerJodaWrapper<Integer>
+                ts = new TimeSeriesHandlerJodaWrapper<>(
                 Duration.millis(1000), startDate, persistenceHandler,
                 DateTimeZone.getDefault());
 
-        ts.add(startDate.plusSeconds(1), 1);
+        ts.add(TS_ID, startDate.plusSeconds(1), 1);
     }
 
 
@@ -42,15 +45,16 @@ public class TimeSeriesJodaWrapperTest {
 
         List<JodaDateTimeValue<Integer>> batch =
                 createBatch(10000, 1, startDate);
-        TimeSeriesJodaWrapper<Integer> ts = new TimeSeriesJodaWrapper<>(10,
+        TimeSeriesHandlerJodaWrapper<Integer>
+                ts = new TimeSeriesHandlerJodaWrapper<>(10,
                 Duration.millis(1000),
                 startDate, persistenceHandler, DateTimeZone.getDefault());
-        ts.batchAdd(batch);
+        ts.batchAdd(TS_ID, batch);
 
         assertEquals(1000, persistenceHandler.getPersistCount());
 
         Iterator<JodaDateTimeValue<Integer>> ite =
-                ts.get(startDate.plusSeconds(1000), startDate.plusSeconds(20000));
+                ts.get(TS_ID, startDate.plusSeconds(1000), startDate.plusSeconds(20000));
 
         assertTrue(ite.hasNext());
 
@@ -69,15 +73,16 @@ public class TimeSeriesJodaWrapperTest {
 
         List<JodaDateTimeValue<Integer>> batch =
                 createBatch(10000, 1, startDate);
-        TimeSeriesJodaWrapper<Integer> ts = new TimeSeriesJodaWrapper<>(10,
+        TimeSeriesHandlerJodaWrapper<Integer>
+                ts = new TimeSeriesHandlerJodaWrapper<>(10,
                 Duration.millis(1000),
                 startDate, persistenceHandler, DateTimeZone.getDefault());
-        ts.batchAdd(batch);
+        ts.batchAdd(TS_ID, batch);
 
         assertEquals(1000, persistenceHandler.getPersistCount());
 
         Iterator<JodaDateTimeValue<Integer>> ite =
-                ts.get(startDate, startDate.plusSeconds(20000));
+                ts.get(TS_ID, startDate, startDate.plusSeconds(20000));
 
         assertTrue(ite.hasNext());
 
