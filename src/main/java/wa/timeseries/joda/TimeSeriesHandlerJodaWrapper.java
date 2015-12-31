@@ -120,4 +120,7 @@ public class TimeSeriesHandlerJodaWrapper<T> {
         }
     }
 
+    public TimeSeriesHandler<T> getInternalHandler() {
+        return timeSeriesHandler;
+    }
 }
